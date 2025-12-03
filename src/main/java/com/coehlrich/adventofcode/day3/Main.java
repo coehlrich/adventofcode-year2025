@@ -17,13 +17,27 @@ public class Main implements Day {
                 .map(Integer::parseInt)
                 .toList()))
                 .toList();
-        int part1 = 0;
+        long part1 = 0;
+        long part2 = 0;
         for (IntList bank : banks) {
-            int max = bank.subList(0, bank.size() - 1).intStream().max().getAsInt();
-            IntList single = bank.subList(bank.indexOf(max) + 1, bank.size());
-            part1 += max * 10 + single.intStream().max().getAsInt();
+            part1 += calculate(bank, 2);
+            part2 += calculate(bank, 12);
         }
-        return new Result(part1, 0);
+        return new Result(part1, part2);
+    }
+
+    private long calculate(IntList bank, int count) {
+        long value = 0;
+        int index = 0;
+        for (int i = 0; i < count; i++) {
+            value *= 10;
+            IntList subList = bank.subList(index, bank.size() - (count - i - 1));
+            int max = subList.intStream().max().getAsInt();
+            index = subList.indexOf(max) + index + 1;
+            value += max;
+        }
+        System.out.println(value);
+        return value;
     }
 
 }
