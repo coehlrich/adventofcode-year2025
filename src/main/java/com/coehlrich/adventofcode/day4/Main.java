@@ -16,21 +16,23 @@ public class Main implements Day {
             }
         }
 
-        IntObjectPair<boolean[][]> part1 = remove(map);
+        int part1 = remove(map, false);
 
-        int part2Result = part1.leftInt();
-        IntObjectPair<boolean[][]> part2 = part1;
-        while (part2.leftInt() != 0) {
-            part2 = remove(part2.right());
-            part2Result += part2.leftInt();
+        int runs = 1;
+        int removed = remove(map, true);
+        int part2 = 0;
+        while (removed != 0) {
+            runs++;
+            part2 += removed;
+            removed = remove(map, true);
         }
 
-        return new Result(part1.leftInt(), part2Result);
+        System.out.println(runs);
+        return new Result(part1, part2);
     }
 
-    public IntObjectPair<boolean[][]> remove(boolean[][] map) {
+    public int remove(boolean[][] map, boolean modify) {
         int result = 0;
-        boolean[][] newMap = new boolean[map.length][map[0].length];
         for (int y = 0; y < map.length; y++) {
             for (int x = 0; x < map[y].length; x++) {
                 if (map[y][x]) {
@@ -49,9 +51,11 @@ public class Main implements Day {
                     }
                     if (count < 4) {
                         result++;
+                        if (modify) {
+                            map[y][x] = false;
+                        }
 //                        System.out.print('x');
                     } else {
-                        newMap[y][x] = true;
 //                        System.out.print('@');
                     }
                 } else {
@@ -60,7 +64,7 @@ public class Main implements Day {
             }
 //            System.out.println();
         }
-        return IntObjectPair.of(result, newMap);
+        return result;
     }
 
 }
