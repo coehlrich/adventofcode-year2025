@@ -30,7 +30,22 @@ public class Main implements Day {
                 }
             }
         }
-        return new Result(part1, 0);
+
+        long part2 = 0;
+        long end = -1;
+        for (Range range : fresh) {
+            long start = range.start;
+            if (start < end + 1) {
+                start = end + 1;
+            }
+            end = range.end;
+            if (end < start - 1) {
+                end = start - 1;
+            } else {
+                part2 += end - start + 1;
+            }
+        }
+        return new Result(part1, part2);
     }
 
     public record Range(long start, long end) implements Comparable<Range> {
