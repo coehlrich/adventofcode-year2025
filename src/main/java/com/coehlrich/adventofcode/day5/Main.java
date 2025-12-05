@@ -4,6 +4,7 @@ import com.coehlrich.adventofcode.Day;
 import com.coehlrich.adventofcode.Result;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -31,19 +32,25 @@ public class Main implements Day {
             }
         }
 
-        long part2 = 0;
+        List<Range> newRanges = new ArrayList<>();
+        long start = -1;
         long end = -1;
         for (Range range : fresh) {
-            long start = range.start;
-            if (start < end + 1) {
-                start = end + 1;
+            if (start == -1 || end < range.start) {
+                if (start != -1) {
+                    newRanges.add(new Range(start, end));
+                }
+                start = range.start;
             }
-            end = range.end;
-            if (end < start - 1) {
-                end = start - 1;
-            } else {
-                part2 += end - start + 1;
-            }
+
+            end = Math.max(end, range.end);
+        }
+        newRanges.add(new Range(start, end));
+//        System.out.println(newRanges.stream().map(Object::toString).collect(Collectors.joining("\n")));
+
+        long part2 = 0;
+        for (Range range : newRanges) {
+            part2 += range.end - range.start + 1;
         }
         return new Result(part1, part2);
     }
