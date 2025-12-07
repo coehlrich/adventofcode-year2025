@@ -2,10 +2,7 @@ package com.coehlrich.adventofcode.day7;
 
 import com.coehlrich.adventofcode.Day;
 import com.coehlrich.adventofcode.Result;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.*;
 
 public class Main implements Day {
 
@@ -34,25 +31,34 @@ public class Main implements Day {
             splittersByRow.put(y, splitter);
         }
 
-        IntSet beams = new IntOpenHashSet();
-        beams.add(startX);
+        Int2LongMap beams = new Int2LongOpenHashMap();
+        beams.put(startX, 1);
         int part1 = 0;
         for (int y = startY; y < map.length; y++) {
-            IntSet add = new IntOpenHashSet();
-            IntSet remove = new IntOpenHashSet();
+            Int2LongMap add = new Int2LongOpenHashMap();
+            Int2LongMap remove = new Int2LongOpenHashMap();
             IntSet splitters = splittersByRow.get(y);
-            for (int beam : beams) {
-                if (splitters.contains(beam)) {
-                    remove.add(beam);
-                    add.add(beam - 1);
-                    add.add(beam + 1);
+            for (Int2LongMap.Entry beam : beams.int2LongEntrySet()) {
+                if (splitters.contains(beam.getIntKey())) {
+                    int x = beam.getIntKey();
+                    long amount = beam.getLongValue();
+                    remove.put(beam.getIntKey(), beam.getLongValue());
+                    add.put(x - 1, add.get(x - 1) + amount);
+                    add.put(x + 1, add.get(x + 1) + amount);
                     part1++;
                 }
             }
-            beams.addAll(add);
-            beams.removeAll(remove);
+            for (Int2LongMap.Entry toAdd : add.int2LongEntrySet()) {
+                beams.put(toAdd.getIntKey(), beams.get(toAdd.getIntKey()) + toAdd.getLongValue());
+            }
+            for (Int2LongMap.Entry toRemove : remove.int2LongEntrySet()) {
+                beams.put(toRemove.getIntKey(), beams.get(toRemove.getIntKey()) - toRemove.getLongValue());
+                if (beams.get(toRemove.getIntKey()) <= 0) {
+                    beams.remove(toRemove.getIntKey());
+                }
+            }
         }
-        return new Result(part1, 0);
+        return new Result(part1, beams.values().longStream().sum());
     }
 
 }
