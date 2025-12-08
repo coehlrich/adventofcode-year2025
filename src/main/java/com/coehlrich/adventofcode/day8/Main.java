@@ -40,26 +40,32 @@ public class Main implements Day {
                 .sorted(Comparator.comparingLong(pair -> distance(pair.left(), pair.right())))
                 .toList();
         int j = 0;
-        for (int i = 0; i < 1000; i++) {
-            Pair<Point3, Point3> pair = pairs.get(i);
+        int part1 = 0;
+        int part2 = 0;
+        for (int i = 0; i < junctions.size() - 1; j++) {
+            Pair<Point3, Point3> pair = pairs.get(j);
 //            System.out.println(pair);
             Set<Point3> leftCircuit = circuits.get(pair.left());
             Set<Point3> rightCircuit = circuits.get(pair.right());
             if (leftCircuit != rightCircuit) {
-//                i++;
+                i++;
                 leftCircuit.addAll(rightCircuit);
                 for (Point3 right : rightCircuit) {
                     circuits.put(right, leftCircuit);
                 }
+                part2 = pair.left().x() * pair.right().x();
+            }
+            if (j == 999) {
+                List<Set<Point3>> sorted = circuits.values().stream().distinct().sorted(Comparator.comparingInt(Set::size)).toList();
+                part1 = sorted.get(sorted.size() - 1).size() * sorted.get(sorted.size() - 2).size() * sorted.get(sorted.size() - 3).size();
             }
         }
-        List<Set<Point3>> sorted = circuits.values().stream().distinct().sorted(Comparator.comparingInt(Set::size)).toList();
 //        System.out.println(pairs.get(0));
 //        for (Set<Point3> circuit : sorted) {
 //            System.out.println(circuit.size());
 //        }
 
-        return new Result(sorted.get(sorted.size() - 1).size() * sorted.get(sorted.size() - 2).size() * sorted.get(sorted.size() - 3).size(), 0);
+        return new Result(part1, part2);
     }
 
     private long distance(Point3 pos1, Point3 pos2) {
