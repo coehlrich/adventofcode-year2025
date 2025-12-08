@@ -30,13 +30,19 @@ public class Main implements Day {
 
         List<Pair<Point3, Point3>> pairs = junctions.stream()
                 .flatMap(junction -> junctions.stream()
-                        .map(o -> Pair.of(junction, o)))
-                .filter(p1 -> p1.left() != p1.right())
+                        .filter(o -> junction != o)
+                        .map(o -> Set.of(junction, o)))
+                .distinct()
+                .map(set -> {
+                    Iterator<Point3> it = set.iterator();
+                    return Pair.of(it.next(), it.next());
+                })
                 .sorted(Comparator.comparingLong(pair -> distance(pair.left(), pair.right())))
                 .toList();
         int j = 0;
         for (int i = 0; i < 1000; i++) {
             Pair<Point3, Point3> pair = pairs.get(i);
+//            System.out.println(pair);
             Set<Point3> leftCircuit = circuits.get(pair.left());
             Set<Point3> rightCircuit = circuits.get(pair.right());
             if (leftCircuit != rightCircuit) {
@@ -50,7 +56,7 @@ public class Main implements Day {
         List<Set<Point3>> sorted = circuits.values().stream().distinct().sorted(Comparator.comparingInt(Set::size)).toList();
 //        System.out.println(pairs.get(0));
 //        for (Set<Point3> circuit : sorted) {
-//            System.out.println(circuit);
+//            System.out.println(circuit.size());
 //        }
 
         return new Result(sorted.get(sorted.size() - 1).size() * sorted.get(sorted.size() - 2).size() * sorted.get(sorted.size() - 3).size(), 0);
