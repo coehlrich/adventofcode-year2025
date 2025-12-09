@@ -2,8 +2,9 @@ package com.coehlrich.adventofcode.day9;
 
 import com.coehlrich.adventofcode.Day;
 import com.coehlrich.adventofcode.Result;
-import com.coehlrich.adventofcode.util.Direction;
 import com.coehlrich.adventofcode.util.Point2;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -26,8 +27,16 @@ public class Main implements Day {
 
         boolean horizontal = true;
         List<Area> areas = new ArrayList<>();
+        IntSet horizontalLines = new IntOpenHashSet();
+        IntSet verticalLines = new IntOpenHashSet();
         for (int i = 0; i < tiles.size(); i++) {
-
+            Point2 a = tiles.get(i);
+            Point2 b = tiles.get((i + 1) % tiles.size());
+            if (a.x() != b.x()) {
+                horizontalLines.add(a.y());
+            } else {
+                verticalLines.add(a.x());
+            }
         }
 
         long part2 = 0;
@@ -54,16 +63,29 @@ public class Main implements Day {
 
         areas.sort(Comparator.comparingLong(Area::getSize));
 
+        long time = System.currentTimeMillis();
         areas:
         for (int i = areas.size() - 1; i >= 0; i--) {
             Area area = areas.get(i);
 //                System.out.println(area);
             Point2 a = area.a;
             Point2 b = area.b;
-            int[] el = new int[b.y() - a.y() + 1];
-            int[] er = new int[b.y() - a.y() + 1];
-            int[] eu = new int[b.x() - a.x() + 1];
-            int[] ed = new int[b.x() - a.x() + 1];
+            int tx = a.x() + 1;
+            int ty = a.y() + 1;
+            while (verticalLines.contains(tx)) {
+                tx++;
+            }
+
+            while (horizontalLines.contains(ty)) {
+                ty++;
+            }
+
+            if (tx >= b.x() || ty >= b.y()) {
+                throw new IllegalStateException();
+            }
+
+            int t = 0;
+            int l = 0;
 
             for (int j = 0; j < tiles.size(); j++) {
 //                    if (area.toString().equals("Area[a=Point2[x=2, y=3], b=Point2[x=9, y=5]]") && j == 7) {
@@ -75,67 +97,35 @@ public class Main implements Day {
                 if (c.x() != d.x()) {
                     int ax = Math.min(c.x(), d.x());
                     int bx = Math.max(c.x(), d.x());
-                    int start = Math.max(ax + 1, a.x()) - a.x();
-                    int end = Math.min(bx - 1, b.x()) - a.x();
-                    if (end >= 0 && start < eu.length) {
-                        if (c.y() <= a.y()) {
-                            for (int k = start; k <= end; k++) {
-                                eu[k]++;
-                            }
-                        }
-                        if (c.y() >= b.y()) {
-                            for (int k = start; k <= end; k++) {
-                                ed[k]++;
-                            }
-                        }
+                    if (c.y() < ty && ax < tx && bx > tx) {
+                        t++;
                     }
-                    if (c.y() >= a.y() && c.y() <= b.y()) {
-                        if (ax <= a.x()) {
-                            el[c.y() - a.y()]++;
-                        }
-                        if (bx >= b.x()) {
-                            er[c.y() - a.y()]++;
-                        }
+
+                    if (c.y() > a.y() && c.y() < b.y() && (ax <= a.x() && bx > a.x()
+                            || bx >= b.x() && ax < b.x())) {
+                        continue areas;
                     }
                 } else if (c.y() != d.y()) {
                     int ay = Math.min(c.y(), d.y());
                     int by = Math.max(c.y(), d.y());
-                    int start = Math.max(ay + 1, a.y()) - a.y();
-                    int end = Math.min(by - 1, b.y()) - a.y();
-                    if (end >= 0 && start < eu.length) {
-                        if (c.x() <= a.x()) {
-                            for (int k = start; k <= end; k++) {
-                                el[k]++;
-                            }
-                        }
-                        if (c.x() >= b.x()) {
-                            for (int k = start; k <= end; k++) {
-                                er[k]++;
-                            }
-                        }
+                    if (c.x() < tx && ay < ty && by > ty) {
+                        l++;
                     }
-                    if (c.x() >= a.x() && c.x() <= b.x()) {
-                        if (ay <= a.y()) {
-                            eu[c.x() - a.x()]++;
-                        }
-                        if (by >= b.y()) {
-                            ed[c.x() - a.x()]++;
-                        }
+
+                    if (c.x() > a.x() && c.x() < b.x() && (ay <= a.y() && by > a.y()
+                            || by >= b.y() && ay < b.y())) {
+                        continue areas;
                     }
                 }
             }
 //                if (area.toString().equals("Area[a=Point2[x=2, y=3], b=Point2[x=9, y=5]]")) {
 //                    System.out.println();
 //                }
-            for (int j = 1; j < el.length - 1; j++) {
-                if (el[j] % 2 != 1 || er[j] % 2 != 1) {
-                    continue areas;
-                }
+            if (t % 2 != 1) {
+                continue areas;
             }
-            for (int j = 1; j < eu.length - 1; j++) {
-                if (eu[j] % 2 != 1 && ed[j] % 2 != 1) {
-                    continue areas;
-                }
+            if (l % 2 != 1) {
+                continue areas;
             }
             long ax = Math.min(a.x(), b.x());
             long bx = Math.max(a.x(), b.x());
