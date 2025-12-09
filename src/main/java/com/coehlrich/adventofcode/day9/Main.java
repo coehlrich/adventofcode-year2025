@@ -87,63 +87,63 @@ public class Main implements Day {
                             for (int k = start; k <= end; k++) {
                                 ed[k]++;
                             }
+                        }
+                    }
+                    if (c.y() >= a.y() && c.y() <= b.y()) {
+                        if (ax <= a.x()) {
+                            el[c.y() - a.y()]++;
+                        }
+                        if (bx >= b.x()) {
+                            er[c.y() - a.y()]++;
+                        }
+                    }
+                } else if (c.y() != d.y()) {
+                    int ay = Math.min(c.y(), d.y());
+                    int by = Math.max(c.y(), d.y());
+                    int start = Math.max(ay + 1, a.y()) - a.y();
+                    int end = Math.min(by - 1, b.y()) - a.y();
+                    if (end >= 0 && start < eu.length) {
+                        if (c.x() <= a.x()) {
+                            for (int k = start; k <= end; k++) {
+                                el[k]++;
                             }
                         }
-                        if (c.y() >= a.y() && c.y() <= b.y()) {
-                            if (ax <= a.x()) {
-                                el[c.y() - a.y()]++;
-                            }
-                            if (bx >= b.x()) {
-                                er[c.y() - a.y()]++;
-                            }
-                        }
-                    } else if (c.y() != d.y()) {
-                        int ay = Math.min(c.y(), d.y());
-                        int by = Math.max(c.y(), d.y());
-                        int start = Math.max(ay + 1, a.y()) - a.y();
-                        int end = Math.min(by - 1, b.y()) - a.y();
-                        if (end >= 0 && start < eu.length) {
-                            if (c.x() <= a.x()) {
-                                for (int k = start; k <= end; k++) {
-                                    el[k]++;
-                                }
-                            }
-                            if (c.x() >= b.x()) {
-                                for (int k = start; k <= end; k++) {
-                                    er[k]++;
-                                }
-                            }
-                        }
-                        if (c.x() >= a.x() && c.x() <= b.x()) {
-                            if (ay <= a.y()) {
-                                eu[c.x() - a.x()]++;
-                            }
-                            if (by >= b.y()) {
-                                ed[c.x() - a.x()]++;
+                        if (c.x() >= b.x()) {
+                            for (int k = start; k <= end; k++) {
+                                er[k]++;
                             }
                         }
                     }
-                }
-                if (area.toString().equals("Area[a=Point2[x=2, y=3], b=Point2[x=9, y=5]]")) {
-                    System.out.println();
-                }
-                for (int j = 1; j < el.length - 1; j++) {
-                    if (el[j] % 2 != 1 || er[j] % 2 != 1) {
-                        continue areas;
+                    if (c.x() >= a.x() && c.x() <= b.x()) {
+                        if (ay <= a.y()) {
+                            eu[c.x() - a.x()]++;
+                        }
+                        if (by >= b.y()) {
+                            ed[c.x() - a.x()]++;
+                        }
                     }
                 }
-                for (int j = 1; j < eu.length - 1; j++) {
-                    if (eu[j] % 2 != 1 && ed[j] % 2 != 1) {
-                        continue areas;
-                    }
-                }
-                long ax = Math.min(a.x(), b.x());
-                long bx = Math.max(a.x(), b.x());
-                long ay = Math.min(a.y(), b.y());
-                long by = Math.max(a.y(), b.y());
-                part2 = (bx - ax + 1) * (by - ay + 1);
-                break;
             }
+//                if (area.toString().equals("Area[a=Point2[x=2, y=3], b=Point2[x=9, y=5]]")) {
+//                    System.out.println();
+//                }
+            for (int j = 1; j < el.length - 1; j++) {
+                if (el[j] % 2 != 1 || er[j] % 2 != 1) {
+                    continue areas;
+                }
+            }
+            for (int j = 1; j < eu.length - 1; j++) {
+                if (eu[j] % 2 != 1 && ed[j] % 2 != 1) {
+                    continue areas;
+                }
+            }
+            long ax = Math.min(a.x(), b.x());
+            long bx = Math.max(a.x(), b.x());
+            long ay = Math.min(a.y(), b.y());
+            long by = Math.max(a.y(), b.y());
+            part2 = (bx - ax + 1) * (by - ay + 1);
+            break;
+        }
         return new Result(part1, part2);
     }
 
